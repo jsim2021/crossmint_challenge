@@ -41,7 +41,7 @@ class PhaseTwo:
         ]
 
         self.process_map_items()
-        self._pretty_print(self.new_map)
+        self.pretty_print(self.new_map)
 
     def process_map_items(self):
         """Iterate over grid items and process each item."""
@@ -74,38 +74,46 @@ class PhaseTwo:
         """Process individual grid items based on their type."""
         if item == self.POLYANET:
             self._place_entity(self.POLYANET_IMG, row_index, column_index)
-
-            try:
-                response = self.api_service.post_polyanets(row=row_index, column=column_index)
-            except requests.exceptions.HTTPError as http_err:
-                logger.error(
-                    f"HTTP error occurred while posting polyanet at row {row_index}, column {column_index}: {http_err}")
-            except Exception as err:
-                logger.error(f"An error occurred while posting polyanet at row {row_index}, column {column_index}: {err}")
+            self._post_polyanet(row_index, column_index)
         elif self.SOLOON in item:
             if self._is_adjacent_to_polyanet(row_index, column_index):
                 self._place_entity(self.SOLOON_IMG, row_index, column_index)
                 color, _ = item.split("_")
-                try:
-                    response = self.api_service.post_soloons(row_index, column_index, color.lower())
-                except requests.exceptions.HTTPError as http_err:
-                    logger.error(
-                        f"HTTP error occurred while posting soloons at row {row_index}, column {column_index}: {http_err}")
-                except Exception as err:
-                    logger.error(
-                        f"An error occurred while posting soloons at row {row_index}, column {column_index}: {err}")
+                self._post_soloon(row_index, column_index, color.lower())
         elif self.COMETH in item:
             self._place_entity(self.COMETH_IMG, row_index, column_index)
             direction, _ = item.split("_")
-            try:
-                response = self.api_service.post_comeths(row_index, column_index, direction.lower())
-            except requests.exceptions.HTTPError as http_err:
-                logger.error(
-                    f"HTTP error occurred while posting comeths at row {row_index}, column {column_index}: {http_err}")
-            except Exception as err:
-                logger.error(f"An error occurred while posting comeths at row {row_index}, column {column_index}: {err}")
+            self._post_cometh(row_index, column_index, direction.lower())
 
-    def _pretty_print(self, arr):
+    def _post_polyanet(self, row_index, column_index):
+        try:
+            _ = self.api_service.post_polyanets(row=row_index, column=column_index)
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(
+                f"HTTP error occurred while posting polyanet at row {row_index}, column {column_index}: {http_err}")
+        except Exception as err:
+            logger.error(f"An error occurred while posting polyanet at row {row_index}, column {column_index}: {err}")
+
+    def _post_soloon(self, row_index, column_index, color):
+        try:
+            _ = self.api_service.post_soloons(row_index, column_index, color)
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(
+                f"HTTP error occurred while posting soloon at row {row_index}, column {column_index}: {http_err}")
+        except Exception as err:
+            logger.error(f"An error occurred while posting soloon at row {row_index}, column {column_index}: {err}")
+
+    def _post_cometh(self, row_index, column_index, direction):
+        try:
+            _ = self.api_service.post_comeths(row_index, column_index, direction)
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(
+                f"HTTP error occurred while posting comeths at row {row_index}, column {column_index}: {http_err}")
+        except Exception as err:
+            logger.error(f"An error occurred while posting comeths at row {row_index}, column {column_index}: {err}")
+
+    @staticmethod
+    def pretty_print(arr):
         """Print the grid in a formatted style."""
         for row in arr:
             print("".join(map(str, row)))

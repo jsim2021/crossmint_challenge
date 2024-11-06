@@ -33,17 +33,17 @@ class PhaseOne:
 
     def process_map_items(self):
         for row_index, row in enumerate(self.grid_model.grid):
-            for item_index, item in enumerate(row):
+            for column_index, item in enumerate(row):
                 if item == self.POLYANET:
-                    self._post_polyanet(row_index, item_index)
+                    self._post_polyanet(row_index, column_index)
 
-    def _post_polyanet(self, row_index, item_index):
+    def _post_polyanet(self, row_index, column_index):
         try:
-            response = self.api_service.post_polyanets(row=row_index, column=item_index)
+            _ = self.api_service.post_polyanets(row=row_index, column=column_index)
         except requests.exceptions.HTTPError as http_err:
-            logger.error(f"HTTP error occurred while posting polyanet at row {row_index}, column {item_index}: {http_err}")
+            logger.error(f"HTTP error occurred while posting polyanet at row {row_index}, column {column_index}: {http_err}")
         except Exception as err:
-            logger.error(f"An error occurred while posting polyanet at row {row_index}, column {item_index}: {err}")
+            logger.error(f"An error occurred while posting polyanet at row {row_index}, column {column_index}: {err}")
 
 
 # Run the process
