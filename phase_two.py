@@ -12,7 +12,7 @@ from service_module import CrossmintService
 
 
 # Configure logging
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +32,8 @@ class PhaseTwo:
     def __init__(self):
         """Initialize API service, model, and map."""
         self.api_service = CrossmintService(candidate_id=self.CANDIDATE_ID)
-        self.map_data = self.api_service.get_map()
+        logger.info("Retrieving map data.")
+        self.map_data = self._get_map()
         self.grid_model = GridModel(self.map_data[self.GOAL])
 
         self.new_map = [
@@ -40,6 +41,7 @@ class PhaseTwo:
             for _ in range(self.grid_model.num_columns)
         ]
 
+        logger.info("Processing map items")
         self.process_map_items()
         self.pretty_print(self.new_map)
 
@@ -74,15 +76,18 @@ class PhaseTwo:
         """Process individual grid items based on their type."""
         if item == self.POLYANET:
             self._place_entity(self.POLYANET_IMG, row_index, column_index)
+            logger.info("Sending POST request to the /polyanet endpoint")
             self._post_polyanet(row_index, column_index)
         elif self.SOLOON in item:
             if self._is_adjacent_to_polyanet(row_index, column_index):
                 self._place_entity(self.SOLOON_IMG, row_index, column_index)
                 color, _ = item.split("_")
+                logger.info("Sending POST request to the /soloon endpoint")
                 self._post_soloon(row_index, column_index, color.lower())
         elif self.COMETH in item:
             self._place_entity(self.COMETH_IMG, row_index, column_index)
             direction, _ = item.split("_")
+            logger.info("Sending POST request to the /cometh endpoint")
             self._post_cometh(row_index, column_index, direction.lower())
 
     def _post_polyanet(self, row_index, column_index):
@@ -111,6 +116,14 @@ class PhaseTwo:
                 f"HTTP error occurred while posting comeths at row {row_index}, column {column_index}: {http_err}")
         except Exception as err:
             logger.error(f"An error occurred while posting comeths at row {row_index}, column {column_index}: {err}")
+
+    def _get_map(self) -> dict:
+        try:
+            return self.api_service.get_map()
+        except requests.exceptions.HTTPError as http_err:
+            logger.error(f"HTTP error occurred while retrieving map: {http_err}")
+        except Exception as err:
+            logger.error(f"An error occurred while retrieving map: {err}")
 
     @staticmethod
     def pretty_print(arr):

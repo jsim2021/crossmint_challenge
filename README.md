@@ -13,7 +13,7 @@ The challenge includes two main phases and I have split them into separate files
 
 - **Object-Oriented Design**: I structured the code with classes for different object types, keeping the design clean, modular, and extensible.
 - **Error Handling with Exponential Backoff and Jitter**: To handle transient errors when interacting with the API, the solution includes an exponential backoff with jitter for retrying requests, making it resilient to temporary network or server issues.
-- **Logging**: Detailed logging has been implemented to track errors of the Megaverse creation process.
+- **Logging**: Detailed logging has been implemented to track status and errors during the Megaverse creation process.
 - **Abstraction**: Logic is abstracted into classes and methods for readability and reusability, reducing duplication.
 
 ## Setup and Usage
