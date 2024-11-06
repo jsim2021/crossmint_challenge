@@ -40,6 +40,7 @@ class PhaseTwo:
             for _ in range(self.grid_model.num_columns)
         ]
 
+logger.
         self.process_map_items()
         self.pretty_print(self.new_map)
 
