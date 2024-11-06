@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class PhaseTwo:
     # Constants
+    CANDIDATE_ID = "7fadf671-ad83-4988-b9b8-0320b73bf640"
     EMPTY = "🌌"
     POLYANET_IMG = "🪐"
     SOLOON_IMG = "🌕"
@@ -30,7 +31,7 @@ class PhaseTwo:
 
     def __init__(self):
         """Initialize API service, model, and map."""
-        self.api_service = CrossmintService(candidate_id="7fadf671-ad83-4988-b9b8-0320b73bf640")
+        self.api_service = CrossmintService(candidate_id=self.CANDIDATE_ID)
         self.map_data = self.api_service.get_map()
         self.grid_model = GridModel(self.map_data[self.GOAL])
 
@@ -84,9 +85,8 @@ class PhaseTwo:
         elif self.SOLOON in item:
             if self._is_adjacent_to_polyanet(row_index, column_index):
                 self._place_entity(self.SOLOON_IMG, row_index, column_index)
-
+                color, _ = item.split("_")
                 try:
-                    color, _ = item.split("_")
                     response = self.api_service.post_soloons(row_index, column_index, color.lower())
                 except requests.exceptions.HTTPError as http_err:
                     logger.error(
@@ -96,9 +96,8 @@ class PhaseTwo:
                         f"An error occurred while posting soloons at row {row_index}, column {column_index}: {err}")
         elif self.COMETH in item:
             self._place_entity(self.COMETH_IMG, row_index, column_index)
-
+            direction, _ = item.split("_")
             try:
-                direction, _ = item.split("_")
                 response = self.api_service.post_comeths(row_index, column_index, direction.lower())
             except requests.exceptions.HTTPError as http_err:
                 logger.error(

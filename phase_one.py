@@ -19,12 +19,14 @@ logger = logging.getLogger(__name__)
 class PhaseOne:
     # Constants
     POLYANET = "POLYANET"
+    GOAL = "goal"
+    CANDIDATE_ID = "7fadf671-ad83-4988-b9b8-0320b73bf640"
 
     def __init__(self):
         # Initialize API service and models
-        self.api_service = CrossmintService(candidate_id="7fadf671-ad83-4988-b9b8-0320b73bf640")
+        self.api_service = CrossmintService(candidate_id=self.CANDIDATE_ID)
         self.map_data = self.api_service.get_map()
-        self.grid_model = GridModel(self.map_data.json()['goal'])
+        self.grid_model = GridModel(self.map_data[self.GOAL])
 
         # Process map items
         self.process_map_items()
